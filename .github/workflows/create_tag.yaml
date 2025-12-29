@@ -15,6 +15,14 @@ jobs:
       contents: write
 
     steps:
+      - name: Validate tag input
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: tag must match v0.0.0 (got: $TAG)"
+            exit 1
+          fi
+
       - name: Check workflow is running from main branch
         if: github.ref != 'refs/heads/main'
         run: |
@@ -29,21 +37,15 @@ jobs:
 
       - name: Create git tag
         run: |
-          git tag ${{ inputs.tag }}
-          git push origin ${{ inputs.tag }}
+          TAG="${{ inputs.tag }}"
+          git tag "$TAG"
+          git push origin "$TAG"
 
       - name: Create GitHub Release
         run: |
-          gh release create ${{ inputs.tag }} \
-            --title "${{ inputs.tag }}" \
+          TAG="${{ inputs.tag }}"
+          gh release create "$TAG" \
+            --title "$TAG" \
             --notes-from-tag
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - name: Sync release/candidate with main after tagging
-        run: |
-          git fetch origin main
-          git checkout release/candidate
-          git reset --hard origin/main
-          git push --force origin release/candidate
-
