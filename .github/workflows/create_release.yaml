@@ -57,6 +57,5 @@ jobs:
           GIT_PR_RELEASE_BRANCH_STAGING: main
           GIT_PR_RELEASE_BRANCH_PRODUCTION: release/candidate
           GIT_PR_RELEASE_LABELS: pr-release,skip review
-          GIT_PR_RELEASE_TEMPLATE: .github/GIT_RELEASE_PR_TEMPLATE.html.erb
           TZ: Asia/Tokyo
 
