@@ -38,7 +38,19 @@ jobs:
       - name: Install git-pr-release
         run: gem install --no-document git-pr-release
 
+      - name: Check if there are commits to release
+        id: check_commits
+        run: |
+          git fetch origin main release/candidate
+          if git log origin/release/candidate..origin/main --oneline | grep -q .; then
+            echo "has_commits=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_commits=false" >> $GITHUB_OUTPUT
+            echo "No new commits to release"
+          fi
+
       - name: Create release PR
+        if: steps.check_commits.outputs.has_commits == 'true'
         run: git-pr-release --no-fetch --squashed
         env:
           GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
