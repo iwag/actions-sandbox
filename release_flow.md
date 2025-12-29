@@ -123,7 +123,7 @@ Precondition:
 Steps:
 
 1. Run workflow B (“Create release tag”).
-2. Provide a tag name (e.g. `v1.2.3`).
+2. Provide a tag name in `v0.0.0` format (e.g. `v1.2.3`).
 3. Confirm the GitHub Release appears under “Releases”.
 
 ## FAQ / Operational Notes
@@ -143,4 +143,3 @@ The tag will point to an older `release/candidate` commit. Always merge the curr
 ### What does “tag ↔ branch binding” mean here?
 
 Tags reference commits, not branches. By checking out `release/candidate` during tagging, the tag points to the current `release/candidate` commit, which is the effective binding.
-
