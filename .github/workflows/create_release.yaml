@@ -1,0 +1,50 @@
+name: Create release candidate PR
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  create-release-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure release/candidate branch exists
+        run: |
+          if ! git show-ref --verify --quiet refs/remotes/origin/release/candidate; then
+            echo "Creating release/candidate from main"
+            git fetch origin main
+            git checkout -b release/candidate origin/main
+            git push origin release/candidate
+          else
+            echo "release/candidate already exists"
+          fi
+
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: Install git-pr-release
+        run: gem install --no-document git-pr-release
+
+      - name: Create release PR
+        run: git-pr-release --no-fetch --squashed
+        env:
+          GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_PR_RELEASE_BRANCH_STAGING: main
+          GIT_PR_RELEASE_BRANCH_PRODUCTION: release/candidate
+          GIT_PR_RELEASE_LABELS: pr-release,skip review
+          GIT_PR_RELEASE_TEMPLATE: .github/GIT_RELEASE_PR_TEMPLATE.html.erb
+          TZ: Asia/Tokyo
+

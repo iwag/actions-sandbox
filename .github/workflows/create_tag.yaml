@@ -1,0 +1,33 @@
+name: Create release tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.2.3)'
+        required: true
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/candidate
+          fetch-depth: 0
+
+      - name: Create git tag
+        run: |
+          git tag ${{ inputs.tag }}
+          git push origin ${{ inputs.tag }}
+
+      - name: Create GitHub Release
+        run: |
+          gh release create ${{ inputs.tag }} \
+            --title "${{ inputs.tag }}" \
+            --notes-from-tag
+
