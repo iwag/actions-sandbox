@@ -37,4 +37,6 @@ jobs:
           gh release create ${{ inputs.tag }} \
             --title "${{ inputs.tag }}" \
             --notes-from-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
 
