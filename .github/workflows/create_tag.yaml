@@ -37,4 +37,13 @@ jobs:
           gh release create ${{ inputs.tag }} \
             --title "${{ inputs.tag }}" \
             --notes-from-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Sync release/candidate with main after tagging
+        run: |
+          git fetch origin main
+          git checkout release/candidate
+          git reset --hard origin/main
+          git push --force origin release/candidate
 
